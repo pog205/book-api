@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Hóa đơn bán hàng</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+        
+        body { 
+            font-family: "DejaVu Sans", Arial, sans-serif; /* ✅ Tên font phải khớp với tên trong Java */
+            margin: 0; 
+            padding: 0;
+            font-size: 10pt;
+            line-height: 1.2;
+            color: #333;
+        }
+        
+        /* ✅ Bỏ hết @font-face - để Java load */
+        
+        /* Reset table */
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+        
+        td, th {
+            padding: 0;
+            margin: 0;
+            vertical-align: top;
+        }
+        
+        /* HEADER TABLE */
+        .header-container {
+            width: 100%;
+            margin-bottom: 10pt;
+            border-bottom: 1pt solid #333;
+            padding-bottom: 10pt;
+        }
+        
+        .header-table {
+            width: 100%;
+            border: none;
+        }
+        
+        .logo-cell {
+            width: 70pt;
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        .company-cell {
+            text-align: center;
+            vertical-align: top;
+            padding-left: 10pt;
+        }
+        
+        .company-logo {
+            width: 60pt;
+            height: 60pt;
+        }
+        
+        .company-name {
+            font-size: 16pt;
+            font-weight: bold;
+            color: #FF5722;
+            margin-bottom: 2pt;
+        }
+        
+        .company-address {
+            font-size: 8pt;
+            color: #666;
+            margin-bottom: 1pt;
+        }
+        
+        .invoice-title {
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+            color: #d4751f;
+            margin: 8pt 0 5pt 0;
+        }
+        
+        .order-code {
+            text-align: center;
+            font-size: 9pt;
+            margin-bottom: 10pt;
+        }
+        
+        /* INFO TABLE */
+        .info-container {
+            width: 100%;
+            margin-bottom: 10pt;
+        }
+        
+        .info-table {
+            width: 100%;
+            border: none;
+        }
+        
+        .info-cell {
+            width: 50%;
+            padding: 3pt 5pt;
+            vertical-align: top;
+        }
+        
+        .info-title {
+            font-weight: bold;
+            font-size: 10pt;
+            margin-bottom: 3pt;
+            color: #333;
+            border-bottom: 0.5pt solid #ddd;
+            padding-bottom: 1pt;
+        }
+        
+        .info-item {
+            margin-bottom: 2pt;
+            font-size: 8pt;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 50pt;
+        }
+        
+        /* PRODUCT TABLE */
+        .product-table {
+            width: 100%;
+            border: 0.5pt solid #ddd;
+            margin: 8pt 0;
+            font-size: 8pt;
+        }
+        
+        .product-table th,
+        .product-table td {
+            border: 0.5pt solid #ddd;
+            padding: 3pt;
+            text-align: left;
+        }
+        
+        .product-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            text-align: center;
+            font-size: 8pt;
+        }
+        
+        /* Column styles */
+        .col-stt { 
+            width: 8%; 
+            text-align: center; 
+        }
+        
+        .col-product { 
+            width: 42%; 
+        }
+        
+        .col-quantity { 
+            width: 8%; 
+            text-align: center; 
+        }
+        
+        .col-price { 
+            width: 14%; 
+            text-align: right; 
+        }
+        
+        .col-discount { 
+            width: 14%; 
+            text-align: right; 
+        }
+        
+        .col-total { 
+            width: 14%; 
+            text-align: right; 
+        }
+        
+        .product-name {
+            font-weight: bold;
+            margin-bottom: 1pt;
+            font-size: 8pt;
+        }
+        
+        .product-code {
+            font-size: 7pt;
+            color: #666;
+        }
+        
+        /* SUMMARY TABLE */
+        .summary-container {
+            width: 100%;
+            margin-top: 10pt;
+        }
+        
+        .summary-wrapper {
+            width: 100%;
+        }
+        
+        .summary-spacer {
+            width: 60%;
+        }
+        
+        .summary-content {
+            width: 40%;
+        }
+        
+        .summary-table {
+            width: 100%;
+            border: none;
+        }
+        
+        .summary-table td {
+            padding: 2pt 5pt;
+            border: none;
+            font-size: 9pt;
+        }
+        
+        .summary-label {
+            text-align: right;
+            width: 60%;
+        }
+        
+        .summary-value {
+            text-align: right;
+            width: 40%;
+            font-weight: bold;
+        }
+        
+        .total-row .summary-label,
+        .total-row .summary-value {
+            border-top: 1pt solid #333;
+            padding-top: 4pt;
+            font-size: 11pt;
+            font-weight: bold;
+        }
+        
+        .total-row .summary-value {
+            color: #FF5722;
+        }
+        
+        /* FOOTER */
+        .footer {
+            margin-top: 15pt;
+            text-align: center;
+            font-size: 8pt;
+            color: #666;
+        }
+        
+        /* Utility classes */
+        .discount-text {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 7pt;
+        }
+        
+        .font-bold {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header-container">
+        <table class="header-table">
+            <tr>
+                <td class="logo-cell">
+                    <img th:if="${logoBase64 != null and logoBase64 != ''}" 
+                         th:src="${logoBase64}" 
+                         alt="BookStation Logo" 
+                         class="company-logo"/>
+                </td>
+                <td class="company-cell">
+                    <div class="company-name">BOOKSTATION</div>
+                    <div class="company-address">Địa chỉ: Phú Kiều, Hà Nội, Việt Nam</div>
+                    <div class="company-address">Điện thoại: 0123456789 | Email: cskh@bookstation.com</div>
+                </td>
+            </tr>
+        </table>
+        
+        <div class="invoice-title">HÓA ĐƠN BÁN HÀNG</div>
+        <div class="order-code">
+            Mã hóa đơn: <strong th:text="${orderCode}"></strong>
+        </div>
+    </div>
+
+    <!-- THÔNG TIN KHÁCH HÀNG & ĐƠN HÀNG -->
+    <div class="info-container">
+        <table class="info-table">
+            <tr>
+                <td class="info-cell">
+                    <div class="info-title">THÔNG TIN KHÁCH HÀNG</div>
+                    <div class="info-item">
+                        <span class="info-label">Họ tên:</span>
+                        <span th:text="${customerName != null and customerName != '' ? customerName : 'Khách hàng không lưu thông tin'}"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Điện thoại:</span>
+                        <span th:text="${customerPhone != null and customerPhone != '' ? customerPhone : 'Khách Hàng không điền thông tin'}"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Email:</span>
+                        <span th:text="${customerEmail != null and customerEmail != '' ? customerEmail : 'Khách Hàng không điền thông tin'}"></span>
+                    </div>
+                    <div class="info-item" th:if="${deliveryAddress != null and deliveryAddress != ''}">
+                        <span class="info-label">Địa chỉ:</span>
+                        <span th:text="${deliveryAddress}"></span>
+                    </div>
+                </td>
+                <td class="info-cell">
+                    <div class="info-title">THÔNG TIN ĐƠN HÀNG</div>
+                    <div class="info-item">
+                        <span class="info-label">Ngày đặt:</span>
+                        <span th:text="${#dates.format(orderDate, 'dd/MM/yyyy HH:mm')}"></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Loại đơn:</span>
+                        <span th:switch="${orderType}">
+                            <span th:case="'ONLINE'">Đặt hàng online</span>
+                            <span th:case="'COUNTER'">Bán tại quầy</span>
+                            <span th:case="*" th:text="${orderType != null ? orderType : 'Không xác định'}"></span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Thanh toán:</span>
+                        <span th:switch="${paymentMethod}">
+                            <span th:case="'COD'">Thanh toán khi nhận hàng</span>
+                            <span th:case="'ONLINE_PAYMENT'">Thanh toán online</span>
+                            <span th:case="'BANK_TRANSFER'">Chuyển khoản ngân hàng</span>
+                            <span th:case="'CASH'">Tiền mặt</span>
+                            <span th:case="'CARD'">Thẻ tín dụng/ghi nợ</span>
+                            <span th:case="'E_WALLET'">Ví điện tử</span>
+                            <span th:case="'QR_CODE'">Quét mã QR</span>
+                            <span th:case="*">
+                                <span th:text="${paymentMethod != null and paymentMethod != '' ? paymentMethod : 'Tiền mặt'}"></span>
+                            </span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Trạng thái:</span>
+                        <span th:switch="${orderStatus}">
+                            <span th:case="'PENDING'">Chờ xử lý</span>
+                            <span th:case="'CONFIRMED'">Đã xác nhận</span>
+                            <span th:case="'SHIPPED'">Đang giao hàng</span>
+                            <span th:case="'DELIVERED'">Giao hàng thành công</span>
+                            <span th:case="'DELIVERY_FAILED'">Giao hàng thất bại</span>
+                            <span th:case="'REDELIVERING'">Đang giao lại</span>
+                            <span th:case="'RETURNING_TO_WAREHOUSE'">Đang trả về kho</span>
+                            <span th:case="'CANCELED'">Đã hủy</span>
+                            <span th:case="'REFUND_REQUESTED'">Yêu cầu hoàn trả</span>
+                            <span th:case="'AWAITING_GOODS_RETURN'">Chờ lấy hàng hoàn trả</span>
+                            <span th:case="'GOODS_RECEIVED_FROM_CUSTOMER'">Đã nhận hàng hoàn trả</span>
+                            <span th:case="'GOODS_RETURNED_TO_WAREHOUSE'">Hàng đã về kho</span>
+                            <span th:case="'REFUNDING'">Đang hoàn tiền</span>
+                            <span th:case="'REFUNDED'">Đã hoàn tiền</span>
+                            <span th:case="'PARTIALLY_REFUNDED'">Hoàn tiền một phần</span>
+                            <span th:case="*" th:text="${orderStatus != null ? orderStatus : 'Không xác định'}"></span>
+                        </span>
+                    </div>
+                    <div class="info-item" th:if="${staffName != null and staffName != ''}">
+                        <span class="info-label">Nhân viên:</span>
+                        <span th:text="${staffName}"></span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- BẢNG SẢN PHẨM -->
+    <table class="product-table">
+        <thead>
+            <tr>
+                <th class="col-stt">STT</th>
+                <th class="col-product">Sản phẩm</th>
+                <th class="col-quantity">SL</th>
+                <th class="col-price">Đơn giá</th>
+                <th class="col-discount">Giảm giá</th>
+                <th class="col-total">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item, iterStat : ${orderItems}">
+                <td class="col-stt" th:text="${iterStat.count}"></td>
+                <td class="col-product">
+                    <div class="product-name" th:text="${item.bookName}"></div>
+                    <div class="product-code" th:text="'Mã: ' + ${item.bookCode}"></div>
+                </td>
+                <td class="col-quantity" th:text="${item.quantity}"></td>
+                <td class="col-price">
+                    <div th:if="${item.originalPrice != item.unitPrice}" 
+                         class="original-price" 
+                         th:text="${#numbers.formatDecimal(item.originalPrice, 0, 'COMMA', 0, 'POINT')} + '₫'"></div>
+                    <div th:text="${#numbers.formatDecimal(item.unitPrice, 0, 'COMMA', 0, 'POINT')} + '₫'"></div>
+                </td>
+                <td class="col-discount">
+                    <div th:if="${item.itemDiscountAmount > 0}" 
+                         class="discount-text"
+                         th:text="'-' + ${#numbers.formatDecimal(item.itemDiscountAmount, 0, 'COMMA', 0, 'POINT')} + '₫'"></div>
+                    <div th:if="${item.voucherDiscountAmount > 0}" 
+                         class="discount-text"
+                         th:text="'-' + ${#numbers.formatDecimal(item.voucherDiscountAmount, 0, 'COMMA', 0, 'POINT')} + '₫'"></div>
+                    <div th:if="${item.itemDiscountAmount == 0 && item.voucherDiscountAmount == 0}">0₫</div>
+                </td>
+                <td class="col-total font-bold" 
+                    th:text="${#numbers.formatDecimal(item.totalAmount, 0, 'COMMA', 0, 'POINT')} + '₫'"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- TỔNG CỘNG -->
+    <div class="summary-container">
+        <table class="summary-wrapper">
+            <tr>
+                <td class="summary-spacer"></td>
+                <td class="summary-content">
+                    <table class="summary-table">
+                        <tr>
+                            <td class="summary-label">Tạm tính:</td>
+                            <td class="summary-value" th:text="${#numbers.formatDecimal(subtotal, 0, 'COMMA', 0, 'POINT')} + '₫'"></td>
+                        </tr>
+                        <tr th:if="${totalDiscountAmount > 0}">
+                            <td class="summary-label discount-text">Tổng giảm giá:</td>
+                            <td class="summary-value discount-text" th:text="'-' + ${#numbers.formatDecimal(totalDiscountAmount, 0, 'COMMA', 0, 'POINT')} + '₫'"></td>
+                        </tr>
+                        <tr th:if="${shippingFee > 0}">
+                            <td class="summary-label">Phí vận chuyển:</td>
+                            <td class="summary-value" th:text="${#numbers.formatDecimal(shippingFee, 0, 'COMMA', 0, 'POINT')} + '₫'"></td>
+                        </tr>
+                        <tr class="total-row">
+                            <td class="summary-label">TỔNG CỘNG:</td>
+                            <td class="summary-value" th:text="${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT')} + '₫'"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        <p><strong>Cảm ơn quý khách đã mua hàng tại BookStation!</strong></p>
+        <p>Mọi thắc mắc xin liên hệ hotline: 0123456789</p>
+    </div>
+</body>
+</html>
