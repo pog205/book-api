@@ -69,7 +69,6 @@ public class Address {
     @Column(name = "address_type", length = 20)
     private AddressType addressType;
 
-    @ColumnDefault("0")
     @Column(name = "is_default")
     private Boolean isDefault;
 
