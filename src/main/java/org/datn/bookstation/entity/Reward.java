@@ -37,7 +37,6 @@ public class Reward {
     private String name;
 
     @Nationalized
-    @Lob
     @Column(name = "description")
     private String description;
 

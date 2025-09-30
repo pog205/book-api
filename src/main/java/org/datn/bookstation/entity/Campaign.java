@@ -43,7 +43,6 @@ public class Campaign {
     private Integer configPointCost; // Số điểm cần để mở 1 hộp point
 
     @Nationalized
-    @Lob
     @Column(name = "description")
     private String description;
 

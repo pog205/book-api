@@ -51,13 +51,11 @@ public class CheckoutSession {
     private String paymentMethod;
 
     // ID voucher đã chọn (JSON array)
-    @Lob
     @Column(name = "selected_voucher_ids")
     private String selectedVoucherIds; // JSON: [1,2] hoặc null
 
     // Thông tin sản phẩm (JSON array của checkout items)
     @NotNull
-    @Lob
     @Column(name = "checkout_items", nullable = false)
     private String checkoutItems; // JSON: [{"bookId":1,"quantity":2,"isFlashSale":true,"flashSaleItemId":1}]
 
@@ -101,7 +99,6 @@ public class CheckoutSession {
     private Integer updatedBy;
 
     // Ghi chú thêm
-    @Lob
     @Column(name = "notes")
     private String notes;
 

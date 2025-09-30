@@ -36,7 +36,6 @@ public class Point {
     private Integer pointSpent;
 
     @Nationalized
-    @Lob
     @Column(name = "description")
     private String description;
 

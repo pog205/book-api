@@ -36,7 +36,6 @@ public class Voucher {
     private String name;
     
     @Nationalized
-    @Lob
     @Column(name = "description")
     private String description;
 

@@ -25,7 +25,6 @@ public class Publisher {
     private String publisherName;
 
     @Nationalized
-    @Lob
     @Column(name = "address")
     private String address;
 
@@ -48,7 +47,6 @@ public class Publisher {
     private Integer establishedYear;
 
     @Nationalized
-    @Lob
     @Column(name = "description")
     private String description;
 

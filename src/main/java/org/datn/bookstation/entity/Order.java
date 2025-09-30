@@ -95,13 +95,11 @@ public class Order {
     private String paymentMethod; // "COD", "ONLINE_PAYMENT", "BANK_TRANSFER", etc.
 
     @Nationalized
-    @Lob
     @Column(name = "notes")
     private String notes;
 
     // Lý do hủy/hoàn trả
     @Nationalized
-    @Lob
     @Column(name = "cancel_reason")
     private String cancelReason;
 

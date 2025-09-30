@@ -26,7 +26,7 @@ public class Role {
     private RoleName roleName;
 
     @Nationalized
-    @Lob
+    
     @Column(name = "description")
     private String description;
 

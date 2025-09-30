@@ -38,7 +38,6 @@ public class Review {
     Integer rating;
 
     @Nationalized
-    @Lob
     String comment;
 
     @Column(name = "review_date", nullable = false)

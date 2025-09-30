@@ -31,7 +31,6 @@ public class Address {
 
     @NotNull
     @Nationalized
-    @Lob
     @Column(name = "address_detail", nullable = false)
     private String addressDetail;
 
