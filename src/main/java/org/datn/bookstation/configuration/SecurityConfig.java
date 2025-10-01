@@ -48,7 +48,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 "http://localhost:*",
-                "https://book-api-jkzp.onrender.com")); // Cho phép mọi port localhost và domain Render
+                "https://book-api-jkzp.onrender.com",
+                "https://book-client-beta.vercel.app")); // Cho phép mọi port localhost, domain Render và client Vercel
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
