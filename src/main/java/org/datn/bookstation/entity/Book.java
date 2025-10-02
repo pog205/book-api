@@ -19,11 +19,19 @@ import java.util.Set;
 @Setter
 @ToString
 @Entity
-@Table(name = "book")
+@Table(name = "book", indexes = {
+        @Index(name = "idx_book_name", columnList = "book_name"),
+        @Index(name = "idx_category_id", columnList = "category_id"),
+        @Index(name = "idx_supplier_id", columnList = "supplier_id"),
+        @Index(name = "idx_publisher_id", columnList = "publisher_id"),
+        @Index(name = "idx_price", columnList = "price"),
+        @Index(name = "idx_status", columnList = "status"),
+        @Index(name = "idx_book_code", columnList = "book_code")
+})
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)      
+    @Column(name = "id", nullable = false)
     private Integer id;
 
     @Size(max = 255)
@@ -67,7 +75,7 @@ public class Book {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    // ✅ THÊM MỚI: Nhà xuất bản  
+    // ✅ THÊM MỚI: Nhà xuất bản
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "publisher_id")
     private Publisher publisher;
@@ -159,7 +167,7 @@ public class Book {
     protected void onUpdate() {
         updatedAt = System.currentTimeMillis();
     }
-    
+
     /**
      * ✅ THÊM MỚI: Tính giá thực tế sau khi áp dụng discount (nếu có)
      * Đây là giá mà khách hàng phải trả, không phải giá gốc
@@ -168,21 +176,21 @@ public class Book {
         if (!Boolean.TRUE.equals(discountActive)) {
             return price; // Không có discount active
         }
-        
+
         BigDecimal effectivePrice = price;
-        
+
         // Áp dụng discount theo giá trị trước
         if (discountValue != null && discountValue.compareTo(BigDecimal.ZERO) > 0) {
             effectivePrice = effectivePrice.subtract(discountValue);
         }
-        
+
         // Sau đó áp dụng discount theo phần trăm
         if (discountPercent != null && discountPercent > 0) {
             BigDecimal discountAmount = effectivePrice.multiply(BigDecimal.valueOf(discountPercent))
-                .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
+                    .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
             effectivePrice = effectivePrice.subtract(discountAmount);
         }
-        
+
         // Đảm bảo giá không âm
         return effectivePrice.max(BigDecimal.ZERO);
     }

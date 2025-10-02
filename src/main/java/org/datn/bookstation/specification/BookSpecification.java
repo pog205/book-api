@@ -9,9 +9,9 @@ import java.util.List;
 public class BookSpecification {
 
     public static Specification<Book> filterBy(String bookName, Integer categoryId, Integer supplierId,
-            Integer publisherId,
-            BigDecimal minPrice, BigDecimal maxPrice, Byte status,
-            String bookCode) {
+                                               Integer publisherId,
+                                               BigDecimal minPrice, BigDecimal maxPrice, Byte status,
+                                               String bookCode) {
         return (root, query, criteriaBuilder) -> {
             var predicates = criteriaBuilder.conjunction();
 
@@ -74,9 +74,9 @@ public class BookSpecification {
     }
 
     public static Specification<Book> filterBy(String bookName, Integer categoryId, Integer parentCategoryId,
-            List<Integer> authorId,
-            Integer publisherId,
-            BigDecimal minPrice, BigDecimal maxPrice) {
+                                               List<Integer> authorId,
+                                               Integer publisherId,
+                                               BigDecimal minPrice, BigDecimal maxPrice) {
         return (root, query, criteriaBuilder) -> {
             var predicates = criteriaBuilder.conjunction();
             //  Chỉ lấy sách có status = 1 (hoạt động)
